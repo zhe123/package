@@ -1,10 +1,21 @@
-package labelPrinting;
+  package labelPrinting;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
+
+import org.apache.axis.message.MessageElement;
+import org.xml.sax.SAXException;
+
+import com.usps_cpas.www.usps_cpas.GSSAPI.ConsolidatorWebServiceSoapProxy;
+import com.usps_cpas.www.usps_cpas.GSSAPI.GetPackageLabelsResponse;
+import com.usps_cpas.www.usps_cpas.GSSAPI.LabelResult;
+import com.usps_cpas.www.usps_cpas.GSSAPI.LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult;
+import com.usps_cpas.www.usps_cpas.GSSAPI.LoadAndRecordLabeledPackageXmlDoc;
+import com.usps_cpas.www.usps_cpas.GSSAPI.ReceptacleResult;
 public class Package {
     private  String FileFormat;
     private String OrderId; 
@@ -234,32 +245,16 @@ public Package() {
 //    	}
 //    	public Builder set
 //    }
-    public SOAPMessage GetPackageLabels() throws SOAPException, IOException {
-    	
-    	String soapAction="http://www.usps-cpas.com/usps-cpas/GSSAPI/GetPackageLabels";
-    	MessageFactory messageFactory=MessageFactory.newInstance();
-		SOAPMessage soapMessage=messageFactory.createMessage();
-		SOAPBody soapBody=Utility.createSoapEnvelope(soapMessage).getBody();
-		SOAPElement soapBodyElem=soapBody.addChildElement("GetPackageLabels","", Utility.NamespaceUrl);
-		SOAPElement soapBodyElem1=soapBodyElem.addChildElement("PackageId");
-		SOAPElement soapBodyElem2=soapBodyElem.addChildElement("MailingAgentID");
-		SOAPElement soapBodyElem3=soapBodyElem.addChildElement("BoxNumber");
-		SOAPElement soapBodyElem4=soapBodyElem.addChildElement("FileFormat");
-		SOAPElement soapBodyElem5=soapBodyElem.addChildElement("AccessToken");
-		soapBodyElem1.addTextNode(this.PackageId);
-		soapBodyElem2.addTextNode(this.MailingAgentID);
-		soapBodyElem3.addTextNode(this.BoxNUmber);
-		soapBodyElem4.addTextNode(this.FileFormat);
-		Token token=new Token();
-		soapBodyElem5.addTextNode(token.getAccess_token());
-		SOAPMessage soapResponse=Utility.callUspsApiService(Utility.soapEndPointUrl, soapAction, soapMessage);
-		return soapResponse;
+    public LabelResult GetPackageLabels(String packageID,String mailingAgentID,int boxNumber,String token) throws SOAPException, IOException {
+       
+        ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();
+        
+		LabelResult result=proxy.getPackageLabels(packageID, mailingAgentID, boxNumber, "6", token);
+		
+		return result;
     }
-    public void AddPackageInReceptacle() throws SOAPException {
-    	String soapAction="http://www.usps-cpas.com/usps-cpas/GSSAPI/GetPackageLabels";
-    	MessageFactory messageFactory=MessageFactory.newInstance();
-		SOAPMessage soapMessage=messageFactory.createMessage();
-		SOAPBody soapBody=Utility.createSoapEnvelope(soapMessage).getBody();
+    public ReceptacleResult AddPackageInReceptacle() throws {
+     
     	
     	
     }
@@ -270,24 +265,15 @@ public Package() {
 		SOAPBody soapBody=Utility.createSoapEnvelope(soapMessage).getBody();
     	
     }
-    public  SOAPMessage LoadAndRecordLabeledPackage(String xmlString,String token) throws SOAPException, IOException {
-    	//https://gss.usps.com/usps-cpas/gssapi/consolidatorwebservice.asmx
-    	//http://gss.usps.com/usps-cpas/gssapi/consolidatorwebservice.asmx?WSDL
-    	//http://www.usps-cpas.com/usps-cpas/GSSAPI/LoadAndRecordLabeledPackage
-    	String soapAction="http://www.usps-cpas.com/usps-cpas/GSSAPI/LoadAndRecordLabeledPackage";
-    	MessageFactory messageFactory=MessageFactory.newInstance();
-		SOAPMessage soapMessage=messageFactory.createMessage();
-		soapMessage.setProperty(SOAPMessage.WRITE_XML_DECLARATION, "true");
-		SOAPBody soapBody=Utility.createSoapEnvelope(soapMessage).getBody(); 
-		SOAPElement soapElement=soapBody.addChildElement("LoadAndRecordLabeledPackage", "", Utility.NamespaceUrl);
-		SOAPElement soapElement1=soapElement.addChildElement("xmlDoc");
-		SOAPElement soapElement2=soapElement.addChildElement("AccessToken");
-		soapElement1.addTextNode(xmlString);
-		soapElement2.addTextNode(token);
-		
-		
-		SOAPMessage soapResponse=Utility.callUspsApiService(Utility.soapEndPointUrl, soapAction, soapMessage);
-		return soapResponse;
+    public LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult  LoadAndRecordLabeledPackage(String token) throws IOException, SAXException, ParserConfigurationException {
+    	
+    	File file=new File(getClass().getResource("templatePackageData").getFile());
+       MessageElement[] element=XmlMessage.convertXMLStringtoMessageElement(file);
+	   LoadAndRecordLabeledPackageXmlDoc xmlDoc=new LoadAndRecordLabeledPackageXmlDoc();
+	    xmlDoc.set_any(element);
+	    ConsolidatorWebServiceSoapProxy proxy=new ConsolidatorWebServiceSoapProxy();
+	    LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=proxy.loadAndRecordLabeledPackage(xmlDoc,token);
+	    return result;
     }
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

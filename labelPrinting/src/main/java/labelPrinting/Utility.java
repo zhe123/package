@@ -8,6 +8,7 @@ import javax.xml.soap.*;
 public class Utility {
 	public static final String soapEndPointUrl="http://gss.usps.com/usps-cpas/TestGSSAPI/ConsolidatorWebService.asmx";
     public static final String NamespaceUrl="http://www.usps-cpas.com/usps-cpas/GSSAPI/";
+    
 	 public static SOAPEnvelope createSoapEnvelope(SOAPMessage soapMessage) throws SOAPException{
 	    	SOAPPart soapPart=soapMessage.getSOAPPart();
 	    	String Namespace3 ="soap";

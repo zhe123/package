@@ -43,7 +43,7 @@ public class Test {
 		Token token=new Token();
 		SOAPMessage soapResponse=AuthenticateUser.authenticateUser();
      //autheticateuserResponse
-     if(XmlDocument.isSuccess(soapResponse, "AuthenticateUser")) {
+     if(XmlMessage.isSuccess(soapResponse, "AuthenticateUser")) {
     	 
     	SOAPBody body= soapResponse.getSOAPBody();
     	NodeList list=body.getElementsByTagName("AccessToken");
