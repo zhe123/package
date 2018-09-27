@@ -8,7 +8,7 @@ import javax.ws.rs.ApplicationPath;
 
 
 
-@ApplicationPath("/")
+@ApplicationPath("app/")
 public class MainApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {

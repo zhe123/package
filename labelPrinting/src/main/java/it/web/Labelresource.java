@@ -8,27 +8,29 @@ import labelPrinting.XmlMessage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
 import org.codehaus.jettison.json.JSONObject;
+import org.glassfish.jersey.server.mvc.Viewable;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import com.usps_cpas.www.usps_cpas.GSSAPI.LabelResult;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult;
-
+@Path("/app")
 public class Labelresource {
 	
 	
 @POST
-@Path("printLabel")
+@Path("/printLabel")
 @Produces("application/json")
 public byte[][]  printLabel(JSONObject json) throws DOMException, SOAPException, IOException, SAXException, ParserConfigurationException
   {   int boxnumber=1;
@@ -50,10 +52,18 @@ public byte[][]  printLabel(JSONObject json) throws DOMException, SOAPException,
 	  LabelResult result1=pkg.GetPackageLabels("CY000114100US", UserInfo.shippingAgentID,boxnumber,token.getAccess_token());
 	return null;
   }
-	
-	
-	
-	
+@GET
+@Path("/main")
+@Produces(MediaType.TEXT_HTML)
+public Viewable getmain() {
+    return new Viewable("/main.jsp", this);
+}
+@GET
+@Path("/hello")
+@Produces(MediaType.TEXT_HTML)
+public Viewable getHello() {
+    return new Viewable("/index.jsp", this);
+}
 	
 
   
