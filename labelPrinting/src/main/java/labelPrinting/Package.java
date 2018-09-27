@@ -2,6 +2,7 @@
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -10,6 +11,9 @@ import javax.xml.soap.*;
 import org.apache.axis.message.MessageElement;
 import org.xml.sax.SAXException;
 
+import com.usps_cpas.www.usps_cpas.GSSAPI.CalculatePostageResult;
+import com.usps_cpas.www.usps_cpas.GSSAPI.CalculatePostageXmlDoc;
+import com.usps_cpas.www.usps_cpas.GSSAPI.CommonResult;
 import com.usps_cpas.www.usps_cpas.GSSAPI.ConsolidatorWebServiceSoapProxy;
 import com.usps_cpas.www.usps_cpas.GSSAPI.GetPackageLabelsResponse;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LabelResult;
@@ -250,30 +254,34 @@ public Package() {
         ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();
         
 		LabelResult result=proxy.getPackageLabels(packageID, mailingAgentID, boxNumber, "6", token);
-		
+	    
 		return result;
     }
-    public ReceptacleResult AddPackageInReceptacle() throws {
-     
-    	
-    	
-    }
-    public void Calculate_postage() throws SOAPException {
-    	String soapAction="http://www.usps-cpas.com/usps-cpas/GSSAPI/GetPackageLabels";
-    	MessageFactory messageFactory=MessageFactory.newInstance();
-		SOAPMessage soapMessage=messageFactory.createMessage();
-		SOAPBody soapBody=Utility.createSoapEnvelope(soapMessage).getBody();
-    	
-    }
-    public LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult  LoadAndRecordLabeledPackage(String token) throws IOException, SAXException, ParserConfigurationException {
-    	
+   
+    public CalculatePostageResult Calculate_postage(String accessToken) throws SAXException, IOException, ParserConfigurationException {
     	File file=new File(getClass().getResource("templatePackageData").getFile());
+        MessageElement[] element=XmlMessage.convertXMLStringtoMessageElement(file);
+ 	   CalculatePostageXmlDoc xmlDoc=new CalculatePostageXmlDoc();
+ 	    xmlDoc.set_any(element);
+ 	   
+    	ConsolidatorWebServiceSoapProxy proxy=new ConsolidatorWebServiceSoapProxy();
+    	
+    	CalculatePostageResult result=proxy.calculatePostage(xmlDoc, accessToken);
+    	return result;
+    	
+    }
+    public  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult  LoadAndRecordLabeledPackage(File file,String token) throws IOException, SAXException, ParserConfigurationException {
+    	
+    	
        MessageElement[] element=XmlMessage.convertXMLStringtoMessageElement(file);
+       
 	   LoadAndRecordLabeledPackageXmlDoc xmlDoc=new LoadAndRecordLabeledPackageXmlDoc();
 	    xmlDoc.set_any(element);
 	    ConsolidatorWebServiceSoapProxy proxy=new ConsolidatorWebServiceSoapProxy();
 	    LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=proxy.loadAndRecordLabeledPackage(xmlDoc,token);
+	   
 	    return result;
+	    
     }
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

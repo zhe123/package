@@ -1,8 +1,14 @@
 package labelPrinting;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 
 public class Utility {
@@ -72,15 +78,33 @@ public class Utility {
 		            
 	            soapConnection.close();
 	            return soapResponse;
-		
+	
+	 }
+	 public static String getPackageIdInResponse(Document doc) {
+		 NodeList node=doc.getElementsByTagName("Manifest");
+		 NodeList subnode=node.item(0).getChildNodes();
+		 String result=iterate(subnode);
 		 
+
+		 return result;
+	 }
+	 private static String iterate(NodeList node) {
+		 String result=null;
+		 NodeList temp=node.item(0).getChildNodes();
+          for(int i=0;i<temp.getLength();i++) {
+			 
+			if(temp.item(i).getNodeName()=="PackageID") {
+				result=temp.item(i).getTextContent();
+				break;
+			}
+			else {return iterate(temp);}
+		 }
+          return result;
 		 
-		 
-		 
-		 
-		 
-	        
-		 
-		
+	 }
+	 public static void main(String[] args) throws Exception {
+		 File file=new File("/Users/lizhe/test.xml");
+		 Document XMLDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
+	        Element element = XMLDoc.getDocumentElement();
 	 }
 }

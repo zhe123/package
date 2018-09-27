@@ -71,18 +71,32 @@ public class Test {
      
   
      Package package1=new Package();
-     SOAPMessage soapResponse1=package1.LoadAndRecordLabeledPackage("<![CDATA["+output+"]]>",token.getAccess_token());
+     //SOAPMessage soapResponse1=package1.LoadAndRecordLabeledPackage("<![CDATA["+output+"]]>",token.getAccess_token());
    //Print the SOAP Response
 	 System.out.println("Response SOAP Message:");
-     soapResponse1.writeTo(System.out);
+     //soapResponse1.writeTo(System.out);
      System.out.println();
      
-     MessageElement[] message=convertXMLStringtoMessageElement(xmlfile);
-     LoadAndRecordLabeledPackageXmlDoc xmldoc=new LoadAndRecordLabeledPackageXmlDoc();
-     xmldoc.set_any(message);
+//     MessageElement[] message=convertXMLStringtoMessageElement(xmlfile);
+//     LoadAndRecordLabeledPackageXmlDoc xmldoc=new LoadAndRecordLabeledPackageXmlDoc();
+//     xmldoc.set_any(message);
      ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();     
-     LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult re=proxy.loadAndRecordLabeledPackage(xmldoc, token.getAccess_token());
-     System.out.println(re.get_any()[0].getAsString());
+//     LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult re=proxy.loadAndRecordLabeledPackage(xmldoc, token.getAccess_token());
+//     System.out.println(re.get_any()[0].getAsString());
+//     Document op=re.get_any()[0].getAsDocument();
+//     Element el=;
+//     String outp=el.getTextContent();
+//     System.out.println(outp);
+     int a=1;
+     LabelResult result=proxy.getPackageLabels("CY000114100US", UserInfo.shippingAgentID, a, "PNG", token.getAccess_token());
+     byte[][] bt=result.getLabel();
+     for(int i=0;i<bt.length;i++) {
+    	 for(int j=0;j<bt[i].length;j++) {
+    		 
+    		 System.out.println(bt[i][j]);
+    	 }
+     }
+     
      
 	}
 	
