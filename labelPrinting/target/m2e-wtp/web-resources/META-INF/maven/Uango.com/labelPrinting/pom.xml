@@ -63,7 +63,7 @@
     <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-mvc -->
 <dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-mvc</artifactId>
+			<artifactId>jersey-mvc-jsp</artifactId>
 			<version>${jersey.version}</version>
 </dependency>
     

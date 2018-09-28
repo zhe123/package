@@ -50,7 +50,7 @@ public byte[][]  printLabel(JSONObject json) throws DOMException, SOAPException,
 	  //LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=pkg.LoadAndRecordLabeledPackage(file,token.getAccess_token().toString());
 	 // String packageID=result.get_any()[0].getElementsByTagName("PackageID").item(0).getTextContent().toString();
 	  LabelResult result1=pkg.GetPackageLabels("CY000114100US", UserInfo.shippingAgentID,boxnumber,token.getAccess_token());
-	return null;
+	return result1.getLabel();
   }
 @GET
 @Path("/main")
