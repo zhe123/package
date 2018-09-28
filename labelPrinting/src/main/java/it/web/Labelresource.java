@@ -25,7 +25,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LabelResult;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult;
-@Path("/app")
+@Path("/gg")
 public class Labelresource {
 	
 	
