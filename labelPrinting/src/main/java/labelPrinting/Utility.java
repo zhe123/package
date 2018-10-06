@@ -2,6 +2,12 @@ package labelPrinting;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.*;
@@ -9,9 +15,10 @@ import javax.xml.soap.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
+import org.w3c.dom.Node;
 
 public class Utility {
+	public static String tempPackageID;
 	public static final String soapEndPointUrl="http://gss.usps.com/usps-cpas/TestGSSAPI/ConsolidatorWebService.asmx";
     public static final String NamespaceUrl="http://www.usps-cpas.com/usps-cpas/GSSAPI/";
     
@@ -80,28 +87,90 @@ public class Utility {
 	            return soapResponse;
 	
 	 }
-	 public static String getPackageIdInResponse(Document doc) {
+	 public static void getPackageIdInResponse(Document doc) {
+		
+		 Node temp=null;
 		 NodeList node=doc.getElementsByTagName("Manifest");
-		 NodeList subnode=node.item(0).getChildNodes();
-		 String result=iterate(subnode);
-		 
-
-		 return result;
-	 }
-	 private static String iterate(NodeList node) {
-		 String result=null;
-		 NodeList temp=node.item(0).getChildNodes();
-          for(int i=0;i<temp.getLength();i++) {
-			 
-			if(temp.item(i).getNodeName()=="PackageID") {
-				result=temp.item(i).getTextContent();
-				break;
-			}
-			else {return iterate(temp);}
+		 for(int i=0;i<node.getLength();i++) {
+		  if(node.item(i).getNodeType()==Node.ELEMENT_NODE) {
+			Node subnode=node.item(i);
+		  
+		    iterate(subnode);
+		    //System.out.printf(temp.getNodeName());
+		    if(temp!=null&&temp.getNodeName()=="PackageID") {
+		    	break;
+		    }
+		   
+		  }
+		  
 		 }
-          return result;
+		 
+        
+	 }
+	 private static void iterate(Node node) {
+		  
+		   
+		    NodeList temp=node.getChildNodes();
+        	
+        	for(int i=0;i<temp.getLength();i++) {
+        	
+			 //System.out.println(temp.item(i).getNodeName());
+			if(temp.item(i).getNodeType()==Node.ELEMENT_NODE)
+			{
+				if(temp.item(i).getNodeName()=="PackageID") 
+				
+			     {
+				 Utility.tempPackageID=temp.item(i).getTextContent();
+				break;
+			     }
+			else {
+				 iterate(temp.item(i));
+			     }
+        	}
+			  
+			
+		   }
+     
+        
+          
 		 
 	 }
+	 
+	 @SuppressWarnings("null")
+	public static String[] encoder(byte[][] bytearray) throws UnsupportedEncodingException {
+//		for(int j=0;j<bytearray.length;j++) {      
+//		 for(int m=0;m<bytearray[j].length;m++)
+//			 {System.out.println(bytearray[j][m]);
+//			 
+//			 }
+//		}
+		        // Reading a Image file from file system
+		    	String[] base64Image =new String[bytearray.length];
+		        
+		       for(int i=0;i<bytearray.length;i++)
+		       {  
+		          
+		         String temp = new String(Base64.getEncoder().encode(bytearray[i]), "UTF-8");
+		          
+		    	  base64Image[i]=temp;
+		        }
+		       
+		  
+		    
+		    return base64Image;
+		}
+		
+		public static void decoder(String base64Image, String pathFile) {
+		    try (FileOutputStream imageOutFile = new FileOutputStream(pathFile)) {
+		        // Converting a Base64 String into Image byte array
+		        byte[] imageByteArray = Base64.getDecoder().decode(base64Image);
+		        imageOutFile.write(imageByteArray);
+		    } catch (FileNotFoundException e) {
+		        System.out.println("Image not found" + e);
+		    } catch (IOException ioe) {
+		        System.out.println("Exception while reading the Image " + ioe);
+		    }
+		} 
 	 public static void main(String[] args) throws Exception {
 		 File file=new File("/Users/lizhe/test.xml");
 		 Document XMLDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);

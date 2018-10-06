@@ -4,39 +4,54 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Test</title>
+<link rel="stylesheet" href="/labelPrinting/assets/css/main.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/labelPrinting/assets/scripts/main.js"></script>
+
+
 </head>
 <body>
+<div class="topnav">
+  <a id="refresh" class="active"  >refresh</a>
+  <a id="printlabel" >printlabel</a>
+  <a id="AddToreceptacle" >AddToreceptacle</a>
+  <a role="button">default</a>
+</div>
+<div id="embedHolder">
+</div>
     <form id="form1">
         <div>
-            <table style="width: 100%; height: 100%">
+            <table class="equal-width"style="width: 100%; height: 100%">
                 <tr>
                     <td>
-                        <table>
-                            <tr>
-                                <td colspan="2">Scan:<input type="text" style="width: 506px" /></td>
+                        <table id="left-table" border="1">
+                            <tr class="row" style="float:left">
+                                <td colspan="2">
+                                <label id="label0" for="Scan">Scan:</label>
+                                <input type="text" style="width: 536px" /></td>
                             </tr>
 
-                            <tr>
+                            <tr class="row">
                                 <td colspan="2">
-                                    <input type="textarea" style="width: 470px; height: 94px" />
+                                    <input type="textarea" style="width: 536px; height: 94px" />
                                 </td>
                             </tr>
-                            <tr>
+                            <tr class="row">
                                 <td>Reveice:<p />
                                     <img /><img /></td>
                                 <td>Send:<p />
                                     <img /></td>
                             </tr>
-                            <tr>
+                            <tr class="row">
                                 <td colspan="2">Remark: </td>
                             </tr>
-                            <tr>
+                            <tr class="row">
                                 <td colspan="2">ReveiceGoods:<p />
                                     <table>
                                         <tr>
                                             <td>SKU</td>
-                                            <td>PackageNo</td>
+                                            <td id="packageID">PackageNo</td>
                                             <td>Count</td>
                                             <td>Name</td>
                                             <td>Brank</td>
@@ -56,7 +71,7 @@
                         </table>
                     </td>
                     <td>
-                        <table>
+                        <table id="right-table" border="1">
                             <tr>
                                 <td>PackageInfo:<p />
                                     <table>

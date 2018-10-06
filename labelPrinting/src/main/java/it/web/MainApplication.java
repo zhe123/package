@@ -5,7 +5,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ApplicationPath;
-
+import org.glassfish.jersey.jettison.JettisonFeature;
 
 @ApplicationPath("/app")
 public class MainApplication extends Application {
@@ -14,6 +14,7 @@ public class MainApplication extends Application {
         final Set<Class<?>> classes = new HashSet<Class<?>>();
         // register root resource
         classes.add(Labelresource.class);
+        classes.add(JettisonFeature.class);
         classes.add(org.glassfish.jersey.server.mvc.jsp.JspMvcFeature.class);
         return classes;
     }

@@ -253,7 +253,7 @@ public Package() {
        
         ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();
         
-		LabelResult result=proxy.getPackageLabels(packageID, mailingAgentID, boxNumber, "6", token);
+		LabelResult result=proxy.getPackageLabels(packageID, mailingAgentID, boxNumber, "PNG", token);
 	    
 		return result;
     }

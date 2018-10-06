@@ -77,18 +77,21 @@ public class Test {
      //soapResponse1.writeTo(System.out);
      System.out.println();
      
-//     MessageElement[] message=convertXMLStringtoMessageElement(xmlfile);
-//     LoadAndRecordLabeledPackageXmlDoc xmldoc=new LoadAndRecordLabeledPackageXmlDoc();
-//     xmldoc.set_any(message);
+     MessageElement[] message=convertXMLStringtoMessageElement(xmlfile);
+     LoadAndRecordLabeledPackageXmlDoc xmldoc=new LoadAndRecordLabeledPackageXmlDoc();
+     xmldoc.set_any(message);
      ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();     
-//     LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult re=proxy.loadAndRecordLabeledPackage(xmldoc, token.getAccess_token());
-//     System.out.println(re.get_any()[0].getAsString());
-//     Document op=re.get_any()[0].getAsDocument();
-//     Element el=;
-//     String outp=el.getTextContent();
-//     System.out.println(outp);
-     int a=1;
-     LabelResult result=proxy.getPackageLabels("CY000114100US", UserInfo.shippingAgentID, a, "PNG", token.getAccess_token());
+     LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult re=proxy.loadAndRecordLabeledPackage(xmldoc, token.getAccess_token());
+     System.out.println(re.get_any()[0].getAsString());
+    
+     Document XMLDoc = re.get_any()[0].getAsDocument();
+//     File test=new File("/Users/lizhe/test.xml");
+//     
+//     Document testDoc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(test);
+	 Utility.getPackageIdInResponse(XMLDoc);
+	 String packageId=Utility.tempPackageID;
+	 int a =1;
+     LabelResult result=proxy.getPackageLabels(packageId, UserInfo.shippingAgentID, a, "PNG", token.getAccess_token());
      byte[][] bt=result.getLabel();
      for(int i=0;i<bt.length;i++) {
     	 for(int j=0;j<bt[i].length;j++) {

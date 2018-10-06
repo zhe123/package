@@ -22,7 +22,7 @@ public class ConsolidatorWebServiceLocator extends org.apache.axis.client.Servic
     }
 
     // Use to get a proxy class for ConsolidatorWebServiceSoap
-    private java.lang.String ConsolidatorWebServiceSoap_address = "http://gss.usps.com/usps-cpas/TestGSSAPI/ConsolidatorWebService.asmx";
+    private java.lang.String ConsolidatorWebServiceSoap_address = "http://gss.usps.com/usps-cpas/testgssapi/consolidatorwebservice.asmx";
 
     public java.lang.String getConsolidatorWebServiceSoapAddress() {
         return ConsolidatorWebServiceSoap_address;
