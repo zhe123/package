@@ -15,18 +15,18 @@
 <SenderFirstName></SenderFirstName>
 <SenderMiddleInitial></SenderMiddleInitial>
 <SenderLastName></SenderLastName> 
-<SenderBusinessName>Smith Company</SenderBusinessName>
-<SenderAddress_Line_1>123 Main St</SenderAddress_Line_1>
-<SenderAddress_Line_2></SenderAddress_Line_2>
-<SenderAddress_Line_3></SenderAddress_Line_3>
+<SenderBusinessName>Uango.com</SenderBusinessName>
+<SenderAddress_Line_1>25589</SenderAddress_Line_1>
+<SenderAddress_Line_2>sw CanYon Creek Rd</SenderAddress_Line_2>
+<SenderAddress_Line_3>Ste 300</SenderAddress_Line_3>
 <SenderAddress_IsPOBox>N</SenderAddress_IsPOBox>
-<SenderCity>Arlington</SenderCity>
-<SenderProvince>VA</SenderProvince>
-<SenderPostal_Code>22209</SenderPostal_Code>
+<SenderCity>Wilsonville</SenderCity>
+<SenderProvince>OR</SenderProvince>
+<SenderPostal_Code>97070</SenderPostal_Code>
 <SenderCountry_Code>US</SenderCountry_Code>
 <SenderPhone>(703)292-4020</SenderPhone>
 <SenderEmail></SenderEmail>
-<SenderSignature>John Smith</SenderSignature>
+<SenderSignature>Jenny Xu</SenderSignature>
 <SenderTaxpayerID></SenderTaxpayerID>
 <RecipientName></RecipientName>
 <RecipientFirstName>Jane</RecipientFirstName>
@@ -76,17 +76,17 @@
 <EntryFacilityZip>60002</EntryFacilityZip>
 <CustomerReferenceID>2000</CustomerReferenceID>
 <RedirectBusinessName></RedirectBusinessName>
-<RedirectFirstName>John</RedirectFirstName>
-<RedirectLastName>Underwood</RedirectLastName>
-<RedirectAddress_Line_1>1234 Central Blvd</RedirectAddress_Line_1>
-<RedirectAddress_Line_2></RedirectAddress_Line_2>
-<RedirectAddress_Line_3></RedirectAddress_Line_3>
-<RedirectCity>Cushing</RedirectCity>
-<RedirectProvince>OK</RedirectProvince>
-<RedirectPostal_Code>74023</RedirectPostal_Code>
+<RedirectFirstName>Jenny</RedirectFirstName>
+<RedirectLastName>Xu</RedirectLastName>
+<RedirectAddress_Line_1>25589</RedirectAddress_Line_1>
+<RedirectAddress_Line_2>sw CanYon Creek Rd</RedirectAddress_Line_2>
+<RedirectAddress_Line_3>ste 300</RedirectAddress_Line_3>
+<RedirectCity>Wilsonville</RedirectCity>
+<RedirectProvince>OR</RedirectProvince>
+<RedirectPostal_Code>97070</RedirectPostal_Code>
 <RedirectCountry_Code>US</RedirectCountry_Code>
 <RedirectPhone>918-306-0328</RedirectPhone>
-<RedirectEmail>xinbaitutu123@gmail.com</RedirectEmail>
+<RedirectEmail></RedirectEmail>
 <ExporterReferenceType></ExporterReferenceType>
 <ExporterReferenceValue></ExporterReferenceValue>
 <ExporterPhoneNo></ExporterPhoneNo>

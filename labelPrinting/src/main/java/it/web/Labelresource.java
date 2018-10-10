@@ -50,7 +50,10 @@ public String  printLabel(JSONObject json,@QueryParam("callback") String callbac
   {    
 	  //Inialization
 	  int boxnumber=1;
-	  File file=new File(getClass().getResource("templatePackageData").getFile());
+	  ClassLoader classLoader = getClass().getClassLoader();
+	  File templatefile = new File(classLoader.getResource("templatePackageData.xml").getFile());
+	  
+	  Document xmlDoc=XmlMessage.updateXmlvalues(json, templatefile);
 	  Token token=new Token();
       /*
        * autheticateuserResponse start
@@ -76,7 +79,7 @@ public String  printLabel(JSONObject json,@QueryParam("callback") String callbac
        * xmldoc;accessToken
        */
 	  Package pkg=new Package();
-	  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=pkg.LoadAndRecordLabeledPackage(file,token.getAccess_token().toString());
+	  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=pkg.LoadAndRecordLabeledPackage(xmlDoc,token.getAccess_token().toString());
 	 
 	  Document XMLDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(result.get_any()[0].toString());
 	  Utility.getPackageIdInResponse(XMLDoc);
@@ -152,10 +155,14 @@ public Viewable getHello() {
 @Produces(MediaType.APPLICATION_JSON)
 public JSONObject test(JSONObject json) throws Exception {
 	JSONObject out=new JSONObject();
+	JSONObject map=new JSONObject();
 	//Inialization
 	  int boxnumber=1;
 	  ClassLoader classLoader = getClass().getClassLoader();
-	  File file = new File(classLoader.getResource("templatePackageData.xml").getFile());
+	  File templatefile = new File(classLoader.getResource("templatePackageData.xml").getFile());
+
+	  
+	  Document xmlDoc=XmlMessage.updateXmlvalues(json, templatefile);
 	  Token token=new Token();
 	  ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();
     /*
@@ -163,28 +170,53 @@ public JSONObject test(JSONObject json) throws Exception {
      * @param
      *  
      */
-	  
-	  AuthenticateResult re=proxy.authenticateUser(UserInfo.userID, UserInfo.password, UserInfo.locationID, UserInfo.workstationID);
+	  AuthenticateResult re;
+	  try{
+		  re=proxy.authenticateUser(UserInfo.userID, UserInfo.password, UserInfo.locationID, UserInfo.workstationID);
+	  }catch(Exception e) {
+		  map.put("Exception", e);
+		  map.put("Message", "failure");
+		  return map;
+	  }
       
       token.setAccess_token(re.getAccessToken().toString());
     /*
      * authenticateuserResponse End
      */
-    
+   // System.out.println(xmlDoc.);
     Package pkg=new Package();
-	  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=pkg.LoadAndRecordLabeledPackage(file,token.getAccess_token().toString());
+	  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result;
+	  try{
+		  result=pkg.LoadAndRecordLabeledPackage(xmlDoc,token.getAccess_token().toString());
+	  }catch(Exception e) {
+		  map.put("Exception", e);
+		  map.put("Message", "failure");
+		  return map;
+	  }
 	   System.out.println(result.get_any()[0].toString());
 	  Document XMLDoc = result.get_any()[0].getAsDocument();
 	  Utility.getPackageIdInResponse(XMLDoc);
 	  String packageId=Utility.tempPackageID;
 	  System.out.println(packageId);
 	  LabelResult result1=new LabelResult();
-	  System.out.println("check Isprinted:"+json.get("IsPrinted").toString());
-	  if((json.getBoolean("IsPrinted")==false)) {
-		  System.out.println("123");
-		   result1=pkg.GetPackageLabels(packageId, UserInfo.shippingAgentID,boxnumber,token.getAccess_token());
+	  //System.out.println("check Isprinted:"+json.get("IsPrinted").toString());
+	  if((((JSONObject)json.get("Package")).getBoolean("IsPrinted")==false)) {
+		  
+		  try {
+			  result1=pkg.GetPackageLabels(packageId, UserInfo.shippingAgentID,boxnumber,token.getAccess_token());
+		  }catch(Exception e) {
+			  map.put("Exception", e);
+			  map.put("Message", "failure");
+			  return map;
+		  }
 	  }else {
-		   result1=pkg.GetPackageLabels(json.getString("PackageID"), UserInfo.shippingAgentID, boxnumber, token.getAccess_token());
+		   try{
+			   result1=pkg.GetPackageLabels(json.getString("PackageID"), UserInfo.shippingAgentID, boxnumber, token.getAccess_token());
+		   }catch(Exception e) {
+				  map.put("Exception", e);
+				  map.put("Message", "failure");
+				  return map;
+			  }
 	  }
     /*-----------------------------------------------------------------------------------*/
     
@@ -199,11 +231,13 @@ public JSONObject test(JSONObject json) throws Exception {
 	
 	  output=result1.getLabel();//label output as byte[] format
 //	  String[] stringArray=Utility.encoder(output);
-
-	  JSONObject map=new JSONObject();
-	  map.put("LabelDataStringArray",output );
+      String status=output==null?"failure":"success";
+	  
+	  map.put("UspsResponse", result.get_any()[0].toString());
+	  map.put("Message", status);
+	  map.put("LabelByteArray",output );
 	  map.put("PackageID", json.has("PackageID")?json.getString("PackageID"):packageId);
-	  map.put("ImageTyoe", "PNG");
+	  map.put("ImageType", "PNG");
 	  return map;
 	
 }

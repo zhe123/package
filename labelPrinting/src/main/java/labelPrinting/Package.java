@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 
 import org.apache.axis.message.MessageElement;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.usps_cpas.www.usps_cpas.GSSAPI.CalculatePostageResult;
@@ -258,27 +259,28 @@ public Package() {
 		return result;
     }
    
-    public CalculatePostageResult Calculate_postage(String accessToken) throws SAXException, IOException, ParserConfigurationException {
+    public CalculatePostageResult Calculate_postage(Document xmlDoc,String accessToken) throws SAXException, IOException, ParserConfigurationException {
     	File file=new File(getClass().getResource("templatePackageData").getFile());
-        MessageElement[] element=XmlMessage.convertXMLStringtoMessageElement(file);
- 	   CalculatePostageXmlDoc xmlDoc=new CalculatePostageXmlDoc();
- 	    xmlDoc.set_any(element);
+    	
+        MessageElement[] element=XmlMessage.convertXMLStringtoMessageElement(xmlDoc);
+ 	   CalculatePostageXmlDoc calculatexmlDoc=new CalculatePostageXmlDoc();
+ 	    calculatexmlDoc.set_any(element);
  	   
     	ConsolidatorWebServiceSoapProxy proxy=new ConsolidatorWebServiceSoapProxy();
     	
-    	CalculatePostageResult result=proxy.calculatePostage(xmlDoc, accessToken);
+    	CalculatePostageResult result=proxy.calculatePostage(calculatexmlDoc, accessToken);
     	return result;
     	
     }
-    public  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult  LoadAndRecordLabeledPackage(File file,String token) throws IOException, SAXException, ParserConfigurationException {
+    public  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult  LoadAndRecordLabeledPackage(Document xmlDoc,String token) throws IOException, SAXException, ParserConfigurationException {
     	
     	
-       MessageElement[] element=XmlMessage.convertXMLStringtoMessageElement(file);
+       MessageElement[] element=XmlMessage.convertXMLStringtoMessageElement(xmlDoc);
        
-	   LoadAndRecordLabeledPackageXmlDoc xmlDoc=new LoadAndRecordLabeledPackageXmlDoc();
-	    xmlDoc.set_any(element);
+	   LoadAndRecordLabeledPackageXmlDoc LabelxmlDoc=new LoadAndRecordLabeledPackageXmlDoc();
+	    LabelxmlDoc.set_any(element);
 	    ConsolidatorWebServiceSoapProxy proxy=new ConsolidatorWebServiceSoapProxy();
-	    LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=proxy.loadAndRecordLabeledPackage(xmlDoc,token);
+	    LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result=proxy.loadAndRecordLabeledPackage(LabelxmlDoc,token);
 	   
 	    return result;
 	    

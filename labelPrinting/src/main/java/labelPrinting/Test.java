@@ -41,15 +41,13 @@ public class Test {
 	     File xmlfile=new File("/Users/lizhe/inputfile.xml");
 	     
 		Token token=new Token();
-		SOAPMessage soapResponse=AuthenticateUser.authenticateUser();
+		ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();
+		proxy.authenticateUser(UserInfo.userID, UserInfo.password, UserInfo.locationID, UserInfo.workstationID);proxy.authenticateUser(UserInfo.userID, UserInfo.password, UserInfo.locationID, UserInfo.workstationID); proxy.authenticateUser(UserInfo.userID, UserInfo.password, UserInfo.locationID, UserInfo.workstationID);
      //autheticateuserResponse
-     if(XmlMessage.isSuccess(soapResponse, "AuthenticateUser")) {
+    
     	 
-    	SOAPBody body= soapResponse.getSOAPBody();
-    	NodeList list=body.getElementsByTagName("AccessToken");
-    	System.out.println("haha "+list.item(0).getTextContent().toString());
-    	token.setAccess_token(list.item(0).getTextContent().toString());
-     }
+    	
+     
 
   //   LinkedHashMap<String,LinkedHashMap> map=new LinkedHashMap<String,LinkedHashMap>();
      
@@ -80,7 +78,7 @@ public class Test {
      MessageElement[] message=convertXMLStringtoMessageElement(xmlfile);
      LoadAndRecordLabeledPackageXmlDoc xmldoc=new LoadAndRecordLabeledPackageXmlDoc();
      xmldoc.set_any(message);
-     ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();     
+         
      LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult re=proxy.loadAndRecordLabeledPackage(xmldoc, token.getAccess_token());
      System.out.println(re.get_any()[0].getAsString());
     
