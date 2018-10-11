@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 
 public class Utility {
 	public static String tempPackageID;
+	private static String tempRejectCount;
 	public static final String soapEndPointUrl="http://gss.usps.com/usps-cpas/TestGSSAPI/ConsolidatorWebService.asmx";
     public static final String NamespaceUrl="http://www.usps-cpas.com/usps-cpas/GSSAPI/";
     
@@ -107,6 +108,26 @@ public class Utility {
 		 
         
 	 }
+	 public static void getRejectPackageNumInResponse(Document doc) {
+			
+		 Node temp=null;
+		 NodeList node=doc.getElementsByTagName("Manifest");
+		 for(int i=0;i<node.getLength();i++) {
+		  if(node.item(i).getNodeType()==Node.ELEMENT_NODE) {
+			Node subnode=node.item(i);
+		  
+		    iterate(subnode);
+		    //System.out.printf(temp.getNodeName());
+		    if(temp!=null&&temp.getNodeName()=="Reject_Package_Count") {
+		    	break;
+		    }
+		   
+		  }
+		  
+		 }
+		 
+        
+	 }
 	 private static void iterate(Node node) {
 		  
 		   
@@ -123,6 +144,17 @@ public class Utility {
 				 Utility.tempPackageID=temp.item(i).getTextContent();
 				break;
 			     }
+				
+			else {
+				 iterate(temp.item(i));
+			     }
+				if(temp.item(i).getNodeName()=="Reject_Package_Count") 
+					
+			     {
+				 Utility.tempRejectCount=temp.item(i).getTextContent();
+				break;
+			     }
+				
 			else {
 				 iterate(temp.item(i));
 			     }

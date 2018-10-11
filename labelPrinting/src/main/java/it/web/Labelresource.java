@@ -26,6 +26,7 @@ import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.jersey.server.mvc.Viewable;
@@ -38,6 +39,7 @@ import com.usps_cpas.www.usps_cpas.GSSAPI.AuthenticateResult;
 import com.usps_cpas.www.usps_cpas.GSSAPI.ConsolidatorWebServiceSoapProxy;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LabelResult;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult;
+import com.usps_cpas.www.usps_cpas.GSSAPI.TrackResult;
 @Path("/")
 public class Labelresource {
 	
@@ -160,60 +162,81 @@ public JSONObject test(JSONObject json) throws Exception {
 	  int boxnumber=1;
 	  ClassLoader classLoader = getClass().getClassLoader();
 	  File templatefile = new File(classLoader.getResource("templatePackageData.xml").getFile());
-
-	  
-	  Document xmlDoc=XmlMessage.updateXmlvalues(json, templatefile);
+	  Document xmlDoc;
 	  Token token=new Token();
 	  ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();
-    /*
-     * autheticateuserResponse start
-     * @param
-     *  
-     */
+	  
 	  AuthenticateResult re;
-	  try{
-		  re=proxy.authenticateUser(UserInfo.userID, UserInfo.password, UserInfo.locationID, UserInfo.workstationID);
+	  LabelResult result1=new LabelResult();
+      Package pkg=new Package();
+      
+      
+      LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result = new LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult();
+      String packageId=null;
+      
+      /*
+       * autheticateuserResponse start
+       * @param
+       *  
+       */
+  	
+  	  try{
+  		  re=proxy.authenticateUser(UserInfo.userID, UserInfo.password, UserInfo.locationID, UserInfo.workstationID);
+  	  }catch(Exception e) {
+  		  map.put("Exception", e.toString());
+  		  map.put("Message", "failure");
+  		  return map;
+  	  }
+        
+        token.setAccess_token(re.getAccessToken().toString());
+      /*
+       * authenticateuserResponse End
+       */
+ 
+    if((((JSONObject)json.get("Package")).getBoolean("IsPrinted")==false)) {
+	  try {
+	        xmlDoc=XmlMessage.updateXmlvalues(json, templatefile);
 	  }catch(Exception e) {
-		  map.put("Exception", e);
+		  map.put("Exception", e.toString());
 		  map.put("Message", "failure");
 		  return map;
 	  }
-      
-      token.setAccess_token(re.getAccessToken().toString());
-    /*
-     * authenticateuserResponse End
-     */
+	
+
    // System.out.println(xmlDoc.);
-    Package pkg=new Package();
-	  LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult result;
+     
+    
+	  
 	  try{
 		  result=pkg.LoadAndRecordLabeledPackage(xmlDoc,token.getAccess_token().toString());
 	  }catch(Exception e) {
-		  map.put("Exception", e);
+		  map.put("Exception", e.toString());
 		  map.put("Message", "failure");
 		  return map;
 	  }
 	   System.out.println(result.get_any()[0].toString());
 	  Document XMLDoc = result.get_any()[0].getAsDocument();
 	  Utility.getPackageIdInResponse(XMLDoc);
-	  String packageId=Utility.tempPackageID;
-	  System.out.println(packageId);
-	  LabelResult result1=new LabelResult();
+	  packageId =Utility.tempPackageID;
+	  Utility.getRejectPackageNumInResponse(XMLDoc);
+	  //System.out.println(packageId);
+	 
 	  //System.out.println("check Isprinted:"+json.get("IsPrinted").toString());
-	  if((((JSONObject)json.get("Package")).getBoolean("IsPrinted")==false)) {
+	  
 		  
 		  try {
 			  result1=pkg.GetPackageLabels(packageId, UserInfo.shippingAgentID,boxnumber,token.getAccess_token());
 		  }catch(Exception e) {
-			  map.put("Exception", e);
+			  map.put("Exception", e.toString());
 			  map.put("Message", "failure");
 			  return map;
 		  }
 	  }else {
 		   try{
-			   result1=pkg.GetPackageLabels(json.getString("PackageID"), UserInfo.shippingAgentID, boxnumber, token.getAccess_token());
+			   System.out.println(((JSONObject)json.get("Package")).getString("PackageID"));
+			   result1=pkg.GetPackageLabels(((JSONObject)json.get("Package")).getString("PackageID"), UserInfo.shippingAgentID, boxnumber, token.getAccess_token());
 		   }catch(Exception e) {
-				  map.put("Exception", e);
+				  map.put("Exception", e.toString());
 				  map.put("Message", "failure");
 				  return map;
 			  }
@@ -230,16 +253,46 @@ public JSONObject test(JSONObject json) throws Exception {
 	  byte[][] output = null;
 	
 	  output=result1.getLabel();//label output as byte[] format
-//	  String[] stringArray=Utility.encoder(output);
+      String[] stringArray=Utility.encoder(output);
       String status=output==null?"failure":"success";
+	  System.out.println(stringArray[0]);
+	  JSONObject temp=new JSONObject();
+	  for(int i=0;i<stringArray.length;i++) {
+		  temp.putOpt(Integer.toString(i),stringArray[i] );
+	  }
+	 if((((JSONObject)json.get("Package")).getBoolean("IsPrinted")==false)) 
+	  {map.put("UspsResponse", result.get_any()[0].toString());
 	  
-	  map.put("UspsResponse", result.get_any()[0].toString());
+	  }
 	  map.put("Message", status);
-	  map.put("LabelByteArray",output );
-	  map.put("PackageID", json.has("PackageID")?json.getString("PackageID"):packageId);
+	  map.put("LabelByteArray",temp);
+	  map.put("PackageID", json.has("PackageID")?((JSONObject)json.get("Package")).getString("PackageID"):packageId);
 	  map.put("ImageType", "PNG");
 	  return map;
 	
+}
+@POST
+@Path("/packageTrack")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public JSONObject packageTrack(JSONObject json) throws Exception {
+	 Token token=new Token();
+	 int boxNumber=1;
+	 JSONObject map=new JSONObject();
+	
+	 ConsolidatorWebServiceSoapProxy proxy =new ConsolidatorWebServiceSoapProxy();
+	 TrackResult  re = new TrackResult();
+	try{
+		re=proxy.trackPackage(json.getString("PackageID"), UserInfo.shippingAgentID, boxNumber, token.getAccess_token());
+	}catch(Exception e){
+		map.put("Message", "failure");
+		map.put("ExceptionCode", e.toString());
+	}
+	map.put("TrackingId", re.getTrackingId());
+	map.put("TrackingEvent", re.getTrackingEvent());
+	map.put("Message", re.getMessage());
+	return map;
+
 }
 	
 
