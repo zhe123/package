@@ -1,0 +1,18 @@
+<CalculatePostage>
+<CountryCode>CN</CountryCode>
+<PostalCode></PostalCode>
+<ServiceType>LBL</ServiceType>
+<RateType>EPMI</RateType>
+<PackageWeight></PackageWeight>
+<UnitOfWeight>LB</UnitOfWeight>
+<PackageLength>10</PackageLength>
+<PackageWidth>10</PackageWidth>
+<PackageHeight>10</PackageHeight>
+<UnitOfMeasurement>IN</UnitOfMeasurement>
+<NonRectangular>0</NonRectangular>
+<DestinationLocationID></DestinationLocationID>
+<RateAdjustmentCode>NORMAL RATE</RateAdjustmentCode>
+<ExtraServiceCode></ExtraServiceCode>
+<EntryFacilityZip></EntryFacilityZip>
+<CustomerReferenceID></CustomerReferenceID>
+</CalculatePostage>
