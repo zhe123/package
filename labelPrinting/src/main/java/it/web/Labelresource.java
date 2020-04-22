@@ -8,8 +8,7 @@ import labelPrinting.XmlMessage;
 
 import java.io.File;
 import java.io.IOException;
-
-
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -25,6 +24,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -36,6 +41,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.usps_cpas.www.usps_cpas.GSSAPI.AuthenticateResult;
+import com.usps_cpas.www.usps_cpas.GSSAPI.CalculatePostageResult;
 import com.usps_cpas.www.usps_cpas.GSSAPI.ConsolidatorWebServiceSoapProxy;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LabelResult;
 import com.usps_cpas.www.usps_cpas.GSSAPI.LoadAndRecordLabeledPackageResponseLoadAndRecordLabeledPackageResult;
@@ -55,7 +61,7 @@ public String  printLabel(JSONObject json,@QueryParam("callback") String callbac
 	  ClassLoader classLoader = getClass().getClassLoader();
 	  File templatefile = new File(classLoader.getResource("templatePackageData.xml").getFile());
 	  
-	  Document xmlDoc=XmlMessage.updateXmlvalues(json, templatefile);
+	  Document xmlDoc=XmlMessage.updatePkgXmlvalues(json, templatefile);
 	  Token token=new Token();
       /*
        * autheticateuserResponse start
@@ -156,6 +162,10 @@ public Viewable getHello() {
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public JSONObject test(JSONObject json) throws Exception {
+//	Iterator it=((JSONObject)json.get("Package")).keys();
+//	while(it.hasNext()) {
+//		System.out.println(((JSONObject)json.get("Package")).get(it.next().toString()));
+//	}
 	JSONObject out=new JSONObject();
 	JSONObject map=new JSONObject();
 	//Inialization
@@ -195,7 +205,12 @@ public JSONObject test(JSONObject json) throws Exception {
  
     if((((JSONObject)json.get("Package")).getBoolean("IsPrinted")==false)) {
 	  try {
-	        xmlDoc=XmlMessage.updateXmlvalues(json, templatefile);
+	        xmlDoc=XmlMessage.updatePkgXmlvalues(json, templatefile);
+//	        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+//	        Result output = new StreamResult(new File("/Users/lizhe/sampleInput.xml"));
+//	        Source input = new DOMSource(xmlDoc);
+//
+//	        transformer.transform(input, output);
 	  }catch(Exception e) {
 		  map.put("Exception", e.toString());
 		  map.put("Message", "failure");
@@ -214,7 +229,7 @@ public JSONObject test(JSONObject json) throws Exception {
 		  map.put("Message", "failure");
 		  return map;
 	  }
-	   System.out.println(result.get_any()[0].toString());
+	   //System.out.println(result.get_any()[0].toString());
 	  Document XMLDoc = result.get_any()[0].getAsDocument();
 	  Utility.getPackageIdInResponse(XMLDoc);
 	  packageId =Utility.tempPackageID;
@@ -233,7 +248,7 @@ public JSONObject test(JSONObject json) throws Exception {
 		  }
 	  }else {
 		   try{
-			   System.out.println(((JSONObject)json.get("Package")).getString("PackageID"));
+			   //System.out.println(((JSONObject)json.get("Package")).getString("PackageID"));
 			   result1=pkg.GetPackageLabels(((JSONObject)json.get("Package")).getString("PackageID"), UserInfo.shippingAgentID, boxnumber, token.getAccess_token());
 		   }catch(Exception e) {
 				  map.put("Exception", e.toString());
@@ -251,11 +266,19 @@ public JSONObject test(JSONObject json) throws Exception {
       
 	  
 	  byte[][] output = null;
-	
+	  String[] stringArray=null;
 	  output=result1.getLabel();//label output as byte[] format
-      String[] stringArray=Utility.encoder(output);
+	  try{
+		  stringArray=Utility.encoder(output);
+	   }catch(Exception e) {
+			  map.put("Exception", e.toString());
+			  map.put("Message", "failure");
+			  return map;
+		  }
+ 
+      
       String status=output==null?"failure":"success";
-	  System.out.println(stringArray[0]);
+	  //System.out.println(stringArray[0]);
 	  JSONObject temp=new JSONObject();
 	  for(int i=0;i<stringArray.length;i++) {
 		  temp.putOpt(Integer.toString(i),stringArray[i] );
@@ -266,7 +289,7 @@ public JSONObject test(JSONObject json) throws Exception {
 	  }
 	  map.put("Message", status);
 	  map.put("LabelByteArray",temp);
-	  map.put("PackageID", json.has("PackageID")?((JSONObject)json.get("Package")).getString("PackageID"):packageId);
+	  map.put("PackageID", ((JSONObject)json.get("Package")).has("PackageID")?((JSONObject)json.get("Package")).getString("PackageID"):packageId);
 	  map.put("ImageType", "PNG");
 	  return map;
 	
@@ -293,6 +316,52 @@ public JSONObject packageTrack(JSONObject json) throws Exception {
 	map.put("Message", re.getMessage());
 	return map;
 
+}
+@POST
+@Path("/calculatePostage")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public JSONObject calculatePostage(JSONObject json) throws SAXException, IOException, ParserConfigurationException, JSONException {
+	  JSONObject map=new JSONObject();
+	  Package pkg=new Package();
+	  ClassLoader classLoader = getClass().getClassLoader();
+	  File templatefile = new File(classLoader.getResource("templateCalculatePostage.xml").getFile());
+	  Document xmlDoc;
+	  CalculatePostageResult result;
+	  try {
+		  xmlDoc=XmlMessage.updateCal_PostageXmlValues(json, templatefile);
+		  
+	  }catch(Exception e) {
+		  map.put("Exception", e.toString());
+		  map.put("Message", "failure");
+		  return map;
+	  }
+	  
+	Token token=new Token();
+	//ConsolidatorWebServiceSoapProxy proxy=new ConsolidatorWebServiceSoapProxy();
+	try {
+	 result=pkg.Calculate_postage(xmlDoc, token.getAccess_token());
+	}catch(Exception e) {
+		map.put("Exception", e.toString());
+		  map.put("Message", "failure");
+		  return map;
+	}
+	if(result.getResponseCode()==0)
+	{ 
+		map.put("Message", "Success");
+	  map.put("CalculatedPostage", result.getCalculatedPostage());
+	  map.put("ExtraServiceCodeFee", result.getExtraServiceCodeFee());
+	  map.put("CurrencyCode", result.getCurrencyCode());
+	  map.put("DestinationLocationName", result.getDestinationLocationName());
+	  map.put("DestinationLocationID", result.getDestinationLocationID());
+	 
+	}else {
+		map.put("Message", "failure");
+		map.put("UspsRespondCode", result.getResponseCode());
+		map.put("UspsMessage", result.getMessage());
+	}
+	
+	return map;
 }
 	
 

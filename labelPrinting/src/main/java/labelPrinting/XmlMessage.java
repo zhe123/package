@@ -19,6 +19,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -95,7 +96,43 @@ public class XmlMessage {
 //	 
 //	  
 //  }
-  public static Document updateXmlvalues(JSONObject json,File file) throws SAXException, IOException, ParserConfigurationException, JSONException {
+  public static Document updateCal_PostageXmlValues(JSONObject json,File file) throws SAXException, IOException, ParserConfigurationException, DOMException, JSONException {
+	  
+	   
+	  
+	  
+	  Document XMLDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
+      NodeList Cal_nodes=XMLDoc.getElementsByTagName("CalculatePostage");
+      
+      NodeList nodes=Cal_nodes.item(0).getChildNodes();
+            	for(int m=0;m<nodes.getLength();m++) {
+            		Node node=(Node)nodes.item(m);
+            		if(node.getNodeType()== node.ELEMENT_NODE)
+            		 {   String name=node.getNodeName();
+            			switch(name)
+            		     {
+            		       case "CountryCode":node.setTextContent(((JSONObject)json.get("CalculatePostage")).getString("CountryCode"));break;
+            		       case "PostalCode":node.setTextContent(((JSONObject)json.get("PostalCode")).getString("CountryCode"));break;
+            		       case "PackageWeight":node.setTextContent(((JSONObject)json.get("PackageWeight")).getString("CountryCode"));break;
+            		       case "UnitOfWeight":node.setTextContent(((JSONObject)json.get("UnitOfWeight")).getString("CountryCode"));break;
+            		       case "PackageLength":node.setTextContent(((JSONObject)json.get("PackageLength")).getString("CountryCode"));break;
+            		       case "PackageWidth":node.setTextContent(((JSONObject)json.get("PackageWidth")).getString("CountryCode"));break;
+            		       case "PackageHeight":node.setTextContent(((JSONObject)json.get("PackageHeight")).getString("CountryCode"));break;
+            		       case "UnitOfMeasurement":node.setTextContent(((JSONObject)json.get("UnitOfMeasurement")).getString("CountryCode"));break;
+            		       case "NonRectangular":node.setTextContent(((JSONObject)json.get("NonRectangular")).getString("CountryCode"));break;
+            		       case "DestinationLocationID":node.setTextContent(((JSONObject)json.get("DestinationLocationID")).getString("CountryCode"));break;
+            		      
+            		       
+            		     }
+            		 }
+            		
+            	}
+				return XMLDoc;
+            	
+            
+            
+  }
+  public static Document updatePkgXmlvalues(JSONObject json,File file) throws SAXException, IOException, ParserConfigurationException, JSONException {
 	  JSONArray array=new JSONArray();
 	  if(json.has("Package")) {
 		  JSONObject PkgJson =json.getJSONObject("Package");
@@ -147,6 +184,7 @@ public class XmlMessage {
             		 {   String packagename=packageNode.getNodeName();
             			switch(packagename)
             		     { case "OrderID":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("OrderID"));break;
+            		       case "SenderSignature":packageNode.setTextContent(Utility.randomName(UserInfo.signatureName));break;
             		       case "RecipientFirstName":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("RecipientFirstName"));break;
             		       case "RecipientMiddleInitial":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("RecipientMiddleInitial"));break;
             		       case "RecipientLastName":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("RecipientLastName"));break;
@@ -163,12 +201,12 @@ public class XmlMessage {
             		       case "RecipientEmail":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("RecipientEmail"));break;
             		       case "RecipientCity":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("RecipientCity"));break;
             		       case "RecipientProvince":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("RecipientProvince"));break;
-            		 
+            		       case "PackageType":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("PackageType"));break;
             		       case "PackageWeight":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("PackageWeight"));break;
             		       case "PackageID":packageNode.setTextContent(((JSONObject)json.get("Package")).getString("PackageID"));break;
             		       case "Item":
-            		    	   {NodeList itemNodes= packageNode.getChildNodes();
-            		    	    
+            		    	   {
+            		    NodeList itemNodes= packageNode.getChildNodes();
             		    for(int n=0;n<itemNodes.getLength();n++) {
                        		Node itemNode=(Node)itemNodes.item(n);
                     		if(itemNode.getNodeType()== itemNode.ELEMENT_NODE)
@@ -181,14 +219,14 @@ public class XmlMessage {
                     		       case "CustomsDescription":itemNode.setTextContent(itemJson.getString("CustomsDescription"));break;
                     		       case "UnitValue":itemNode.setTextContent(itemJson.getString("UnitValue"));break;
                     		       case "ItemWeight":itemNode.setTextContent(itemJson.getString("ItemWeight"));break;
-                    		       case "UnitOfWeight":itemNode.setTextContent(itemJson.getString("UnitOfWeight"));break;
+                    		       case "UnitOfItemWeight":itemNode.setTextContent(itemJson.getString("UnitOfItemWeight"));break;
                     		       case "Quantity":itemNode.setTextContent(itemJson.getString("Quantity"));break;
                     		       case "CountryOfOrigin":itemNode.setTextContent(itemJson.getString("CountryOfOrigin"));break;
                     		       
             		             }
             		         }
             		
-            	                                                  };break;
+            	                  };break;
             		    	   }
             	
                           }

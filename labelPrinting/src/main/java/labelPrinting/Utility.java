@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.*;
@@ -170,26 +171,21 @@ public class Utility {
 	 
 	 @SuppressWarnings("null")
 	public static String[] encoder(byte[][] bytearray) throws UnsupportedEncodingException {
-//		for(int j=0;j<bytearray.length;j++) {      
-//		 for(int m=0;m<bytearray[j].length;m++)
-//			 {System.out.println(bytearray[j][m]);
-//			 
-//			 }
-//		}
+
 		        // Reading a Image file from file system
-		    	String[] base64Image =new String[bytearray.length];
+		    	String[] arr =new String[bytearray.length];
 		        
 		       for(int i=0;i<bytearray.length;i++)
 		       {  
 		          
 		         String temp = new String(Base64.getEncoder().encode(bytearray[i]), "UTF-8");
 		          
-		    	  base64Image[i]=temp;
+		    	  arr[i]=temp;
 		        }
 		       
 		  
 		    
-		    return base64Image;
+		    return arr;
 		}
 		
 		public static void decoder(String base64Image, String pathFile) {
@@ -203,6 +199,20 @@ public class Utility {
 		        System.out.println("Exception while reading the Image " + ioe);
 		    }
 		} 
+		public static String randomName(String[] name) {
+			String res=null;
+		
+			Random rand=new Random();
+			int n=rand.nextInt(5);
+			if(n<=5&&n>=0)
+			{res=name[n];
+			}else {
+				res="William Ye";
+			}
+			
+			
+			return res;
+		}
 	 public static void main(String[] args) throws Exception {
 		 File file=new File("/Users/lizhe/test.xml");
 		 Document XMLDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
